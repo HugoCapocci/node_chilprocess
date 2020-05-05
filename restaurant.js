@@ -13,11 +13,10 @@ waiter.on('message', message => {
 });
 
 // commander un plat
-cook.send('Burger');
-cook.send('Frites');
+['Burger', 'Spaghettis', 'Frites', 'Kebab']
+    .forEach(plat => cook.send(plat));
 
 cook.on('exit', (code, signal) => {
-    console.log(`cook has finished his work.
-        Exited with code ${code} and signal ${signal}`
-    );
+    console.log('cook has finished his work');
+    // réactive un cuisinier
 });

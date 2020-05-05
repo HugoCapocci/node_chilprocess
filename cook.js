@@ -7,7 +7,7 @@ process.on('message', (plat) => {
     plats.push(plat);
 });
 
-// vérifie en 'permanence' s'il y a un pla à cuisiner
+// vérifie en 'permanence' s'il y a un plat à cuisiner
 setInterval(() => {
     if (!isCooking && plats.length > 0)
         doCook();
@@ -26,5 +26,8 @@ function doCook() {
             preparationTime: timeToReady
         });
         isCooking = false;
-    }, timeToReady)
+        if (plats.length == 0) {
+            process.exit(0);
+        }
+    }, timeToReady);
 }
