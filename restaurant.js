@@ -1,22 +1,30 @@
 const fork = require('child_process').fork;
 
-const cook = fork('./cook.js');
 const waiter = fork('./waiter.js');
-
-cook.on('message', (message) => {
-    console.log('le cuisinier a fini un plat ', message);
-    waiter.send(message.plat)
-});
-
 waiter.on('message', message => {
     console.log('plat servi en salle : ', message);
 });
 
-// commander un plat
-['Burger', 'Spaghettis', 'Frites', 'Kebab']
-    .forEach(plat => cook.send(plat));
+let cook;
+function initCook() {
+    cook = fork('./cook.js');
+    cook.on('message', (message) => {
+        console.log('le cuisinier a fini un plat ', message);
+        waiter.send(message.plat)
+    });
+    
+    cook.on('exit', (code, signal) => {
+        console.log('cook has finished his work');
+        // réactive un cuisinier
+        initCook();
+    });
+}
 
-cook.on('exit', (code, signal) => {
-    console.log('cook has finished his work');
-    // réactive un cuisinier
-});
+initCook();
+
+cook.send('Burger');
+
+setTimeout(() => {
+    cook.send('Steak');
+}, 4000);
+
